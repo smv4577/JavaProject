@@ -1,0 +1,123 @@
+///*
+// * Sydney Vernatter
+// */
+//public class Paint {
+//	private String name;
+//	private int red;
+//	private int green;
+//	private int blue;
+//	private double price;
+//	
+//	public Paint(String name, int red, int green, int blue, double price) {
+//		this.name = name;
+//		this.red = red;
+//		this.green = green;
+//		this.blue = blue;
+//		this.price = price;
+//	}
+//	
+//	public String getName() {
+//		return name;
+//	}
+//	
+//	public int getRed() {
+//		return red;
+//	}
+//	
+//	public int getGreen() {
+//		return green;
+//	}
+//	
+//	public int getBlue() {
+//		return blue;
+//	}
+//	
+//	public double getPrice() {
+//		return price;
+//	}
+//	
+//	public Paint mix(Paint p) {
+//		String newName = this.name + p.name;
+//		int newRed = Math.round((this.red + p.red)/2);
+//		int newGreen = Math.round((this.green + p.green)/2);
+//		int newBlue = Math.round((this.blue + p.blue)/2);
+//		double newPrice = (this.price + p.price)/2;
+//		return new Paint(newName, newRed, newGreen, newBlue, newPrice);
+//	}
+//	
+//	public double distanceTo(Paint p) {
+//		int newRed = this.red - p.red;
+//		int newGreen = this.green - p.green;
+//		int newBlue = this.blue - p.blue;
+//		newRed *= newRed;
+//		newGreen*= newGreen;
+//		newBlue *= newBlue;
+//		return Math.sqrt(newRed + newGreen + newBlue);
+//	}
+//	
+//	public boolean equals(Paint p) {
+//		if ((p.getRed() == this.getRed()) && (p.getGreen() == this.getGreen()) && (p.getBlue() == this.getBlue()))
+//			return true;
+//		else return false;
+//	}
+//
+//	// this is probably wrong 
+//	public double updatePrice(double price) {
+//		double oldPrice = this.getPrice();
+//		double newPrice = this.getPrice() + price;
+//		return newPrice;
+//	}
+//	
+//	public String toString() {
+//		return ("name = " + getName() + ", red = " + getRed() + ", green = " + getGreen() + ", blue = " + getBlue() + ", price = " + getPrice());
+//	}
+//}
+
+//Taylor Noble
+
+public class Paint {
+	private String name;
+	private double blue;
+	private double red;
+	private double green;
+	private double price;
+	public Paint(String name, double red, double green, double blue, double price) {
+		this.name = name;
+		this.blue = blue;
+		this.red = red;
+		this.green = green;
+		this.price = price;
+	}
+	@Override
+	public String toString() {
+		return "Name = " + name + ",  red = " + red + ", green = " + green +", " + " blue = " + blue + ", price = " + price;
+	}
+	public boolean equals(Paint other) {
+		if (blue == other.blue  & red == other.red & green == other.green) {
+			return true;
+		}
+		else return false;
+	}
+	public Paint mix(Paint other) {
+		double new_red = (red + other.red)/2;
+		double new_green = (green + other.green)/2;
+		double new_blue = (blue + other.blue)/2;
+		String new_name = name + " " + other.name;
+		double new_price = (price + other.price)/2;
+		return new Paint(new_name,new_red,new_green,new_blue,new_price);
+	}
+	public double distanceTo(Paint other) {
+		double r_diff = Math.pow(red - other.red,2);
+		double g_diff = Math.pow(green - other.green,2);
+		double b_diff = Math.pow(blue - other.blue,2);
+		return Math.sqrt(r_diff + g_diff + b_diff);
+		
+	}
+	public double getPrice() {
+		return price;
+	}
+	public void updatePrice(double price) {
+		this.price = price;
+	}
+	
+}

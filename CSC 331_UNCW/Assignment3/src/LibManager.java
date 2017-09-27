@@ -1,0 +1,457 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Scanner;
+
+public class LibManager {
+	private ArrayList<Book> bookList = new ArrayList<Book>();
+	private ArrayList<Patron> patronList = new ArrayList<Patron>();
+	private ArrayList<Loan> loanList = new ArrayList<Loan>();
+	private String[] menuOptions;
+
+	public static void main(String[] args) {
+		LibManager lm = new LibManager();
+		lm.execute();
+	}
+
+	public LibManager() {
+		bookList = readBooks("Resources/books.txt");
+		patronList = readPatrons("Resources/patrons.txt");
+		loanList = readLoans("Resources/loans.txt");
+
+		menuOptions = new String[] { "Add Book", "Add Patron", "List Books", "List Patrons", "List By Author",
+				"List By Year", "Lend Book", "Return Book", "Show Borrower", "Show Borrowed Books", "Remove Book", "Remove Patron",
+				"Show Overdue Books", "Exit" };
+	}
+
+	private void execute() {
+
+		while (true) {
+			int opt = getMenuOption();
+			switch (opt) {
+			case 1:
+				addBook();
+				break;
+			case 2:
+				addPatron();
+				break;
+			case 3:
+				listBooks();
+				break;
+			case 4:
+				listPatrons();
+				break;
+			case 5:
+				listByAuthor();
+				break;
+			case 6:
+				listByYear();
+				break;
+			case 7:
+				lendBookToPatron();
+				break;
+			case 8:
+				returnBook();
+				break;
+			case 9:
+				showBorrowers();
+				break;
+			case 10:
+				showBorrowedBooks();
+				break;
+			case 11:
+				removeBook();
+				break;
+			case 12:
+				removePatron();
+				break;
+			case 13:
+				showOverdueBooks();
+				break;
+			case 14:
+				exitProgram();
+				break;
+			default:
+				System.out.println("No such option");
+			}
+		}
+	}
+
+	private int getMenuOption() {
+
+		System.out.println("Select one of the following options");
+		for (int i = 0; i < menuOptions.length; i++) {
+			System.out.println("\t" + (i + 1) + ". " + menuOptions[i]);
+		}
+
+		Scanner s = new Scanner(System.in);
+		int choice = s.nextInt();
+
+		return choice;
+	}
+
+	/* MAKE NO CHANGES ABOVE THIS LINE */
+	/* COMPLETE ALL THE CODE STUBS BELOW */
+
+	private void exitProgram() {
+		try {
+			FileWriter bookWriter = new FileWriter("Resources/books.txt"); 
+			FileWriter patronWriter = new FileWriter("Resources/patrons.txt"); 
+			FileWriter loanWriter = new FileWriter("Resources/loans.txt"); 
+
+			for (Book b: bookList) {
+				bookWriter.write(b.getBookId() + "\t;\t" + b.getTitle() + "\t;\t" + b.getAuthor() + "\t;\t" + b.getYear() + "\r\n");
+			}
+
+			for (Patron p: patronList) {
+				patronWriter.write(p.getPatronId() + "\t" + p.getName() + "\r\n");
+			}
+
+
+			for (Loan l: loanList) {
+				loanWriter.write(l.getBook() + "," + l.getPatron() + "," + l.getDueDate() + "\r\n");
+			}
+
+			bookWriter.close();
+			patronWriter.close();
+			loanWriter.close();
+
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Exiting..");
+		System.exit(0);
+	}
+
+	private ArrayList<Book> readBooks(String filename) {
+		// TODO Auto-generated method stub
+
+		ArrayList<Book> lines = new ArrayList<>();
+		Scanner s = null;
+		File infile = new File(filename);
+		try{
+			FileInputStream fis = new FileInputStream(infile);
+			s = new Scanner(fis);
+		} catch (FileNotFoundException e){
+			e.printStackTrace();
+		}
+		while(s.hasNextLine()) {
+			String line = s.nextLine();
+			String[] bookDetails = line.split(";");
+			String bookId = bookDetails[0].trim();
+			String title = bookDetails[1].trim();
+			String author = bookDetails[2].trim();
+			String year = bookDetails[3].trim();
+			Book b = new Book(bookId, title, author, year);
+			
+			for(Loan l : loanList) {
+				if (b.getBookId().equalsIgnoreCase(l.getBook())) {
+					b.setBorrowed();
+				}
+			}
+			lines.add(b);
+		}
+		return lines; 
+	}
+
+	private ArrayList<Patron> readPatrons(String filename) {
+		// TODO Auto-generated method stub
+
+		ArrayList<Patron> lines = new ArrayList<>();
+		Scanner s = null;
+		File infile = new File(filename);
+		try{
+			FileInputStream fis = new FileInputStream(infile);
+			s = new Scanner(fis);
+		} catch (FileNotFoundException e){
+			e.printStackTrace();
+		}
+		while(s.hasNextLine())
+		{
+			String line = s.nextLine();
+			String[] patronDetails = line.split("\t");
+			String patronId = patronDetails[0];
+			String name = patronDetails[1];
+			Patron p = new Patron(patronId, name);
+			lines.add(p);
+		}
+		return lines; 
+	}
+
+	private ArrayList<Loan> readLoans(String filename) {
+		// TODO Auto-generated method stub
+
+		ArrayList<Loan> lines = new ArrayList<>();
+		Scanner s = null;
+		File infile = new File(filename);
+		try{
+			FileInputStream fis = new FileInputStream(infile);
+			s = new Scanner(fis);
+		} catch (FileNotFoundException e){
+			e.printStackTrace();
+		}
+		while(s.hasNextLine()) {
+			String line = s.nextLine();
+			String[] loanDetails = line.split(",");
+			String bookId = loanDetails[0];
+			String patronId = loanDetails[1];
+			String year = loanDetails[2];
+			Loan l = new Loan(bookId, patronId, year);
+			lines.add(l);
+		}
+		return lines; 
+	}
+
+	private Book locateBook(String bookId) {
+		// TODO Auto-generated method stub
+
+		for(Book b : bookList) {
+			if (b.getBookId().equalsIgnoreCase(bookId)) {
+				return b;
+			}
+		}
+		return null;
+	}
+
+	private Patron locatePatron(String patronId) { 
+		// TODO Auto-generated method stub
+
+		for(Patron p : patronList) {
+			if (p.getPatronId().equalsIgnoreCase(patronId)) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	private void showBorrowedBooks() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter Patron ID: ");
+		String patronId = reader.nextLine();
+
+		if (loanList == null) {
+			System.out.println("You aren't borrowing any books.");
+		} 
+		else {
+			System.out.println("Your borrowed books:\n");
+
+			for(Loan l : loanList) {
+				if (l.getPatron().equalsIgnoreCase(patronId)) {
+					for (Book b : bookList) {
+						if (b.getBookId().equalsIgnoreCase(l.getBook())) {
+							System.out.println(b);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void showBorrowers() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter book ID: ");
+		String bookId = reader.nextLine();
+
+		if (loanList == null) {
+			System.out.println("There are no borrowers.");
+		} 
+		else {
+			for (Loan l: loanList) {
+				if (l.getBook().equalsIgnoreCase(bookId)) {
+					String patronId = l.getPatron();
+					for (Patron p: patronList) {
+						if (p.getPatronId().equalsIgnoreCase(patronId)) {
+							System.out.println(p.getName());
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void showOverdueBooks() {
+		// TODO Auto-generated method stub
+
+		for (Loan l: loanList) {
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			String date = l.getDueDate();
+			LocalDate dueDate = LocalDate.parse(date, dtf);
+			LocalDate today = LocalDate.now();
+
+			if (today.isAfter(dueDate)) {
+				for (Book b: bookList) {
+					if (b.getBookId().equalsIgnoreCase(l.getBook())) {
+						System.out.println("Book ID: " + b.getBookId() + ", Title: " + b.getTitle());
+					}
+				}
+			}
+		}
+	}
+
+	private void lendBookToPatron() {
+		// TODO Auto-generated method stub
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter patron ID: ");
+		String p = reader.nextLine();
+		locatePatron(p);
+		System.out.println("Enter book ID: ");
+		String b = reader.nextLine();
+		Book book = locateBook(b);
+		
+		for (Loan loan : loanList) {
+			if (book.checkBorrowed() == false) {
+				book.setBorrowed();
+			}
+			else {
+				System.out.println("Book is taken, find another book.");
+				break;
+			}
+		}
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate localDate = LocalDate.now();
+		localDate = localDate.plusDays(14);
+		String dueDate = localDate.toString();
+
+		Loan l = new Loan(b, p, dueDate);
+		loanList.add(l);	
+	}
+
+	private void returnBook() {
+		// TODO Auto-generated method stub
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter book ID: ");
+		String bookId = reader.nextLine();
+
+		Book b = this.locateBook(bookId);
+		for (Loan l : loanList) {
+			if (b.checkBorrowed() == true) {
+				loanList.remove(l);
+				break;
+			}
+		}
+	}
+
+	private void listByYear() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter minimum year: ");
+		String minimumYear = reader.nextLine();
+		System.out.println("Enter maximum year: ");
+		String maximumYear = reader.nextLine();
+
+		for (int i = 0; i < bookList.size(); i++) {
+			Book b = bookList.get(i);
+
+			int minYear = Integer.valueOf(minimumYear);
+			int maxYear = Integer.valueOf(maximumYear);
+			int year = Integer.valueOf(b.getYear());
+
+			if (minYear <= year && year <= maxYear) {
+				System.out.print("Book ID: " + b.getBookId() +  ", Title: " + b.getTitle() + ", Author: " + b.getAuthor());
+				System.out.print("\n");
+			}
+		}
+	}
+
+	private void listByAuthor() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter author: ");
+		String author = reader.nextLine();
+
+		for (int i = 0; i < bookList.size(); i++) {
+			Book b = bookList.get(i);
+			if (b.getAuthor().contains(author)) {
+				System.out.print("Book ID: " + b.getBookId() +  ", Title: " + b.getTitle() + ", Year: " + b.getYear());
+				System.out.print("\n");
+			}
+		}
+	}
+
+	private void listPatrons() {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < patronList.size(); i++) {
+			System.out.println(patronList.get(i));
+		}
+	}
+
+	private void listBooks() {
+		// TODO Auto-generated method stub
+
+		for (int i = 0; i < bookList.size(); i++) {
+			System.out.println(bookList.get(i));
+		}
+	}
+
+	private void addPatron() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter patron:");
+		String patron = reader.nextLine();
+		Patron p = new Patron(patron);	// Creates new patron object
+		patronList.add(p);
+	}
+
+	private void addBook() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);  // Reading from System.in		
+		System.out.println("Enter author:");
+		String author = reader.nextLine();
+		System.out.println("Enter title:");
+		String title = reader.nextLine();
+		System.out.println("Enter year:");
+		String year = reader.nextLine();
+		Book b = new Book(title, author, year);
+		bookList.add(b);
+	}
+
+	private void removePatron() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);  // Reading from System.in	
+		System.out.println("Enter patron ID: ");
+		String patronId = reader.nextLine();
+
+		Iterator<Patron> itr = patronList.iterator();
+		while (itr.hasNext()) {
+			Patron p = (Patron)itr.next();
+			if (p.getPatronId().equalsIgnoreCase(patronId)) {
+				itr.remove();
+			}
+		}
+	}
+
+	private void removeBook() {
+		// TODO Auto-generated method stub
+
+		Scanner reader = new Scanner(System.in);	// Reading from System.in		
+		System.out.println("Enter book ID:");
+		String bookId = reader.nextLine();
+
+		Iterator<Book> itr = bookList.iterator();
+		while (itr.hasNext()) {
+			Book b = (Book)itr.next();
+			if (b.getBookId().equalsIgnoreCase(bookId)) {
+				itr.remove();
+			}
+		}
+	}
+}

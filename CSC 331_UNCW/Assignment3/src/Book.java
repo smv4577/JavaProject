@@ -1,0 +1,66 @@
+
+public class Book {
+	private String author;
+	private String title;
+	private String year;
+	private String bookId;
+	private static int counter = 1;
+	private boolean isBorrowed;
+		
+	public Book(String bookId, String title, String author, String year) {
+		this.bookId = bookId;
+		this.author = author;
+		this.title = title;
+		this.year = year;
+		
+		// trying to fix this and lending books
+		String[] parts = bookId.split("B");
+		String id = parts[1];
+		int id2 = Integer.parseInt(id);
+		if (id2 > counter) {
+			counter = id2 + 1;
+		}
+//		System.out.println(id2);
+	}
+	
+	public Book(String title, String author, String year) {
+		counter++;
+		bookId = "B" + counter;
+		this.author = author;
+		this.title = title;
+		this.year = year;
+	}
+
+	public String getBookId() {
+		return bookId;
+	}
+	
+	public String getAuthor() {
+		return author;
+	}
+	
+	public String getTitle() {
+		return title;
+	}
+	
+	public String getYear() {
+		return year;
+	}
+	
+	public String toString() {
+        return ("Book ID: " + this.getBookId() + ", Author: " + this.getAuthor() + ", Title: " + this.getTitle() + ", Year: " + this.getYear());
+   }
+	
+	public boolean setBorrowed() {
+		return this.isBorrowed = true;
+	}
+    
+    public boolean checkBorrowed() {
+    	if (this.isBorrowed == true) {
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+}

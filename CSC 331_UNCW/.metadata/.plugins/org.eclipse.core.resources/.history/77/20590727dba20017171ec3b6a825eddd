@@ -1,0 +1,152 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+/**
+ * 
+ * @author Sydney Vernatter
+ *
+ */
+public class Matrix {
+	private int numRows;
+	private int numCols;
+	double[][] data;
+
+	public Matrix(double[][] data) {
+		// TODO Auto-generated constructor stub
+		this.data  = data;
+		numRows = data.length;
+		numCols = data[0].length;
+	}
+
+	public Matrix(String file) {
+		Scanner s = null;
+		try {
+			s = new Scanner (new File(file));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		numRows = 0;
+		numCols = 0;
+		
+		while (s.hasNextLine())
+		{
+			numRows++;
+			String line = s.nextLine();
+			String[] columns = line.split(" ");
+			numCols = columns.length;
+		}
+		
+		double[][] data = new double[numRows][numCols];
+		s.close();
+
+		try {
+			s = new Scanner(new File(file));
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		for (int i=0; i < numRows; i++) {
+			for (int j=0; j < numCols; j++) {
+				if (s.hasNextDouble()) {
+					data[i][j] = s.nextDouble();
+				}
+			}
+		}
+		this.data = data;
+	}
+
+	public boolean equals(Matrix matrix) {
+		if (this.getNumRows() != matrix.getNumRows()) {
+			return false;
+		}
+		for (int i=0; i < numRows; i++) {
+			if (this.getNumCols() != matrix.getNumCols()) {
+				return false;
+			}
+			for (int j=0; j < numCols; j++) {
+				double m1 = this.data[i][j];
+				double m2 = matrix.data[i][j];
+				if (m1 != m2) {
+					return false;
+				}
+			}
+		}	
+		return true;
+	}
+
+	public int getNumRows() {
+		return numRows;
+	}
+
+	public int getNumCols() {
+		return numCols;
+	}
+
+	public Matrix transpose() {
+		// TODO Auto-generated method stub
+		// rows and columns switch - first row becomes first column
+		double[][] newData = new double[numCols][numRows];
+		for (int i=0; i < numRows; i++) {
+			for (int j=0; j < numCols; j++) {
+				newData[j][i] = this.data[i][j];
+			}
+		}
+		Matrix matrix = new Matrix(newData);
+		int newNumRows = getNumRows();
+		int newNumCols = getNumCols();
+		matrix.numRows = newNumCols;
+		matrix.numCols = newNumRows;
+		return matrix;
+	}
+
+	public Matrix add(Matrix m) {
+		// TODO Auto-generated method stub
+		// number of rows/columns has to be the same
+		// m1 + m2 = m3
+		Matrix matrix = new Matrix(data);
+		for (int i=0; i < numRows; i++) {
+			for (int j=0; j < numCols; j++) {
+				matrix.data[i][j] = this.data[i][j] + m.data[i][j];
+			}
+		}
+		return matrix;
+	}
+
+	public double mult(double d) {
+		// TODO Auto-generated method stub
+		// scaler multiplication - every value in the matrix gets multiplied by "double d"
+
+		Matrix matrix = new Matrix(data);
+		for (int i=0; i < numRows; i++) {
+			for (int j=0; j < numCols; j++) {
+				i *= d;
+				j *= d;
+//				this.data[i][j];
+			}
+		}
+		return this.data[numRows][numCols];
+//		return null;
+	}
+
+	public Matrix mult(Matrix m) {
+		// TODO Auto-generated method stub
+		// number of columns in the first matrix has to be equal to the number of rows in the second matrix
+		// first row * first column = first row[0], second row * first column = second row[0]
+
+		return null;
+	}
+
+	public String toString() {
+		String result = "";
+		for (int i=0; i < numRows; i++) {
+			result += "\n";
+			for (int j=0; j < numCols; j++) {
+				result += data[i][j] + " ";
+			}
+		}
+		return (getNumRows() + "x" + getNumCols() + " matrix" + result + "\n");
+	}
+}
