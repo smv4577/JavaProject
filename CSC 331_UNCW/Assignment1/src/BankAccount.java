@@ -7,10 +7,7 @@ public class BankAccount {
 		private static int counter = 1;
 		private BankAccount overdraftAccount = null;
 		private int overdraftFee = 50;
-		
-		//classwork
-		private Customer theOwner = null;
-		
+
 		public BankAccount(double balance) {
 			this.balance = balance;
 			this.accountNumber = "b" + counter;
@@ -50,12 +47,5 @@ public class BankAccount {
 		
 		public void setOverdraftAccount(BankAccount b) {
 			overdraftAccount = b;
-		}
-		
-		//classwork 
-		public void setOwner(Customer c) {
-			theOwner = c;
-			c.addAccount(this);
-		}
-		
+		}		
 }
