@@ -3,18 +3,13 @@ public class Fraction {
 	private int numerator;
 	private int denominator;
 	private String fraction;
-//	private static int counter = 1;
-
 
 	public Fraction(int numerator, int denominator) {
 		this.numerator = numerator;
 		this.denominator = denominator;
-//		this.fraction = "f" + counter;
-//		counter++;
 		simplify();
 	}
 
-	//there may be an easier and/or better way to do this.
 	public Fraction(double decimal) {
 		String s = String.valueOf(decimal);
 		int digitsDec = s.length() - 1 - s.indexOf('.');        
@@ -24,7 +19,6 @@ public class Fraction {
 			denominator *= 10;
 		}
 		int numerator = (int) Math.round(decimal);
-		//Fraction(numerator, denominator);
 		
 		this.numerator = numerator; 
 		this.denominator = denominator;
